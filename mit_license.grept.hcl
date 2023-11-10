@@ -5,7 +5,6 @@ data "http" mit_license {
 rule "file_hash" "mit_license" {
   glob          = "LICENSE"
   hash          = sha1(data.http.mit_license.response_body)
-  error_message = "[MIT license](https://raw.githubusercontent.com/Azure/Azure-Verified-Modules/main/LICENSE) is required."
 }
 
 fix "local_file" "mit_license" {

@@ -1,7 +1,7 @@
 data "git_ignore" "current_ignored_items" {}
 
 rule "must_be_true" "essential_ignored_items" {
-  condition = length(setintersection(toset([
+  condition = length(setintersection([
     "**/.terraform/*",
     "*.tfstate",
     "*.tfstate.*",
@@ -16,7 +16,7 @@ rule "must_be_true" "essential_ignored_items" {
     ".terraform.lock.hcl",
     ".terraformrc",
     "terraform.rc",
-  ]), toset(data.git_ignore.current_ignored_items.records))) == length([
+  ], data.git_ignore.current_ignored_items.records)) == length([
     "**/.terraform/*",
     "*.tfstate",
     "*.tfstate.*",
