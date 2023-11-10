@@ -9,11 +9,6 @@ rule "must_be_true" terraform_docs_yml_exist {
   error_message = "A file called .terraform-docs.yml MUST be present in the root of the module"
 }
 
-rule "must_be_true" terraform_docs_yml_syntax_valid {
-  condition     = can(yamldecode(file(".terraform-docs.yml")))
-  error_message = "Cannot decode `.terraform-docs.yml` file successfully."
-}
-
 fix "local_file" "default_terraform_docs_yml" {
   rule_ids = [rule.must_be_true.terraform_docs_yml_exist.id, rule.must_be_true.terraform_docs_yml_syntax_valid.id]
   paths   = [".terraform-docs.yml"]

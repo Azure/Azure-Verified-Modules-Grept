@@ -1,7 +1,7 @@
 data "git_ignore" "current_ignored_items" {}
 
 rule "must_be_true" "essential_ignored_items" {
-  condition = length(setintersection([
+  condition = length(compliment([
     "**/.terraform/*",
     "*.tfstate",
     "*.tfstate.*",
@@ -16,22 +16,7 @@ rule "must_be_true" "essential_ignored_items" {
     ".terraform.lock.hcl",
     ".terraformrc",
     "terraform.rc",
-  ], data.git_ignore.current_ignored_items.records)) == length([
-    "**/.terraform/*",
-    "*.tfstate",
-    "*.tfstate.*",
-    "crash.log",
-    "crash.*.log",
-    "*.tfvars",
-    "*.tfvars.json",
-    "override.tf",
-    "override.tf.json",
-    "*_override.tf",
-    "*_override.tf.json",
-    ".terraform.lock.hcl",
-    ".terraformrc",
-    "terraform.rc",
-  ])
+  ], data.git_ignore.current_ignored_items.records)) == 0
 }
 
 fix "git_ignore" "ensure_ignore" {
