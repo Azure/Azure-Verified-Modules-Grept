@@ -8,7 +8,7 @@ rule "file_hash" "mit_license" {
 }
 
 fix "local_file" "mit_license" {
-  rule_id = rule.file_hash.mit_license.id
+  rule_ids = [rule.file_hash.mit_license.id]
   paths   = ["LICENSE"]
   content = data.http.mit_license.response_body
 }

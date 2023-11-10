@@ -35,7 +35,7 @@ rule "must_be_true" "essential_ignored_items" {
 }
 
 fix "git_ignore" "ensure_ignore" {
-  rule_id = rule.must_be_true.essential_ignored_items.id
+  rule_ids = [rule.must_be_true.essential_ignored_items.id]
   exist   = [
     "**/.terraform/*",
     "*.tfstate",
