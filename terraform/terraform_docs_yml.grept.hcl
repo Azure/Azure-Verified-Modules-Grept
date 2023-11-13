@@ -10,7 +10,7 @@ rule "must_be_true" terraform_docs_yml_exist {
 }
 
 fix "local_file" "default_terraform_docs_yml" {
-  rule_ids = [rule.must_be_true.terraform_docs_yml_exist.id, rule.must_be_true.terraform_docs_yml_syntax_valid.id]
+  rule_ids = [rule.must_be_true.terraform_docs_yml_exist.id]
   paths   = [".terraform-docs.yml"]
   content = data.http.default_terraform_docs_yml.response_body
 }
