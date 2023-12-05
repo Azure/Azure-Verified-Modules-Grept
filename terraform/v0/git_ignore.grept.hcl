@@ -3,6 +3,7 @@ data "git_ignore" "current_ignored_items" {}
 rule "must_be_true" "essential_ignored_items" {
   condition = length(compliment([
     "avmmakefile",
+    "README-generated",
     "**/.terraform/*",
     "*.tfstate",
     "*.tfstate.*",
@@ -24,6 +25,7 @@ fix "git_ignore" "ensure_ignore" {
   rule_ids = [rule.must_be_true.essential_ignored_items.id]
   exist   = [
     "avmmakefile",
+    "README-generated",
     "**/.terraform/*",
     "*.tfstate",
     "*.tfstate.*",
