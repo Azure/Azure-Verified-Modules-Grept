@@ -14,7 +14,7 @@ rule "dir_exist" "dir_must_exist" {
 fix "local_file" "dir_keep" {
   for_each = local.must_exist_dirs
 
-  rule_ids = [rule.dir_exist.dir_keep[each.key].id]
+  rule_ids = [rule.dir_exist.dir_must_exist[each.key].id]
   paths    = ["${each.value}/.gitkeep"]
   content  = ""
 }
