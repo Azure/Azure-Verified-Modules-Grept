@@ -31,7 +31,7 @@ rule "must_be_true" "variables_tf_exist" {
 }
 
 fix "local_file" "variables_tf" {
-  rule_id = [rule.must_be_true.variables_tf_exist.id]
+  rule_ids = [rule.must_be_true.variables_tf_exist.id]
   paths   = ["variables.tf"]
   content = ""
 }
@@ -42,7 +42,7 @@ rule "must_be_true" "outputs_tf_exist" {
 }
 
 fix "local_file" "outputs_tf" {
-  rule_id = [rule.must_be_true.outputs_tf_exist.id]
+  rule_ids = [rule.must_be_true.outputs_tf_exist.id]
   paths   = ["outputs.tf"]
   content = ""
 }
