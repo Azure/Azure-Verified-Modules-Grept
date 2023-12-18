@@ -1,7 +1,7 @@
 locals {
   ignored_items = toset([
     "avmmakefile",
-    "README-generated",
+    "README-generated.md",
     "avm.tflint.hcl",
     "avm.tflint_example.hcl",
     "**/.terraform/*",
