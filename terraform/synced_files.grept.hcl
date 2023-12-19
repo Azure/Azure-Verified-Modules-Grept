@@ -11,10 +11,12 @@ locals {
     ".github/workflows/version-check.yml"
   ])
   url_prefix = "https://raw.githubusercontent.com/Azure/terraform-azurerm-avm-template/main"
+  # Azure/xxx
   github_repository_name = env("GITHUB_REPOSITORY")
+  # Azure
   github_repository_owner = env("GITHUB_REPOSITORY_OWNER")
   github_repository_name_without_owner = trimprefix(local.github_repository_name, "${local.github_repository_owner}/")
-  rendered_e2e_yml = replace(data.http.e2e_yaml.response_body, "[ self-hosted, 1ES.Pool=terraform-azurerm-container-apps ]", "[ self-hosted, 1ES.Pool=${local.github_repository_name_without_owner} ]")
+  rendered_e2e_yml = replace(data.http.e2e_yaml.response_body, "[ self-hosted, 1ES.Pool=terraform-azurerm-avm-template ]", "[ self-hosted, 1ES.Pool=${local.github_repository_name_without_owner} ]")
 }
 
 data "http" "synced_files" {
