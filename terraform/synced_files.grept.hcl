@@ -10,8 +10,8 @@ locals {
     ".github/workflows/version-check.yml"
   ])
   url_prefix = "https://raw.githubusercontent.com/Azure/terraform-azurerm-avm-template/main"
-  # Azure/xxx
   github_server_url = coalesce(env("GITHUB_SERVER_URL"), "https://github.com")
+  # Azure/xxx
   github_repository_name = env("GITHUB_REPOSITORY")
   # Azure
   github_repository_owner = env("GITHUB_REPOSITORY_OWNER")
