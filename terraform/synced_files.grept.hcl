@@ -6,7 +6,6 @@ locals {
     "SECURITY.md",
     "SUPPORT.md",
     ".terraform-docs.yml",
-    ".github/workflows/e2e.yml",
     ".github/workflows/linting.yml",
     ".github/workflows/version-check.yml"
   ])
