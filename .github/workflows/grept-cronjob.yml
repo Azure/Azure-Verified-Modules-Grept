@@ -151,6 +151,6 @@ jobs:
     steps:
       - name: raise issue
         run: |
-          gh issue create --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(needs.governance.outputs) }}"
+          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(needs.governance.outputs) }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
