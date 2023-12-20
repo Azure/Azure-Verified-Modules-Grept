@@ -95,7 +95,7 @@ jobs:
           PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKE }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ${{ matrix.repo }}
 
       - name: close and comment out of date prs
