@@ -87,7 +87,7 @@ jobs:
         working-directory: ${{ matrix.repo }}
 
       - name: commit changes to branch and push to origin
-        if: steps.changes.outputs.detected
+        if: steps.changes.outputs.detected == 'true'
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
@@ -98,7 +98,7 @@ jobs:
         working-directory: ${{ matrix.repo }}
 
       - name: create pull request
-        if: steps.changes.outputs.detected
+        if: steps.changes.outputs.detected == 'true'
         id: pr
         run: |
           PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
@@ -108,7 +108,7 @@ jobs:
         working-directory: ${{ matrix.repo }}
 
       - name: close and comment out of date prs
-        if: steps.changes.outputs.detected
+        if: steps.changes.outputs.detected == 'true'
         run: |
           PULL_REQUESTS=$(gh pr list --search "fix: repository governance" --json number)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
