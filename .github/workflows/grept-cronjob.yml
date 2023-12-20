@@ -1,0 +1,94 @@
+---
+name: Grept
+on:
+  schedule:
+    - cron: '43 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  getrepos:
+    runs-on: ubuntu-latest
+    outputs:
+      repoarray: ${{ steps.graphql.outputs.repoarray }}
+    steps:
+      - name: query GitHub graphql API
+        id: graphql
+        run: |
+          RESULT=$(gh api graphql --paginate -f query='query {
+            search(query: "terraform-azurerm-avm user:azure", type: REPOSITORY, first: 100) {
+                repositoryCount
+                edges {
+                  node {
+                    ... on Repository {
+                      name
+                    }
+                  }
+                }
+              }
+            }')
+          NUMREPOS=$(echo $RESULT | jq '.data.search.repositoryCount')
+          echo "Number of repos found: $NUMREPOS"
+          REPOARRAY=$(echo $RESULT | jq -c '.data.search.edges | [.[].node.name]')
+          echo repoarray="$REPOARRAY"
+          echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  governance:
+    runs-on: ubuntu-latest
+    needs: getrepos
+    strategy:
+      max-parallel: 5
+      matrix:
+        repo: ${{ fromJson(needs.getrepos.outputs.repoarray) }}
+    steps:
+      - name: install grept
+        run: |
+          go install github.com/Azure/grept@latest
+
+      - name: checkout remote
+        id: checkout
+        run: |
+          gh repo clone "https://github.com/Azure/${{ matrix.repo }}.git"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: grept apply
+        run: |
+          grept apply
+        working-directory: ${{ matrix.repo }}
+
+      - name: detect changes
+        id: changes
+        run: |
+          if [[ -z $(git status -s) ]]; then
+            echo "No changes detected"
+            echo 'detected=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Changes detected"
+          echo 'detected=true' >> "$GITHUB_OUTPUT"
+        working-directory: ${{ matrix.repo }}
+
+      - name: commit changes to branch and push to origin
+        if: steps.changes.outputs.detected
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git checkout -b "grept-apply-$(date +%s)"
+          git add .
+          git commit -m "fix: grept apply"
+          git push origin
+        working-directory: ${{ matrix.repo }}
+
+      - name: create pull request
+        if: steps.changes.outputs.detected
+        run: |
+          PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
+          echo "pull-request-url=$PR_URL" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.USER_PAT }}
+        working-directory: ${{ matrix.repo }}
