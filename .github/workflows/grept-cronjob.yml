@@ -118,3 +118,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
+
+  report:
+    name: report
+    runs-on: ubuntu-latest
+    needs: governance
+    if: ${{ failure() }}
+    steps:
+      - name: report
+        run: |
+          echo "Report"
+          echo "======"
+          echo
+          echo ${{ fromJson(needs.governance) }}
