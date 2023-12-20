@@ -1,5 +1,5 @@
 ---
-name: Grept
+name: grept
 on:
   schedule:
     - cron: '43 0 * * 0'
@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   getrepos:
+    name: get repos
     runs-on: ubuntu-latest
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
@@ -38,12 +39,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   governance:
+    name: governance
     runs-on: ubuntu-latest
     needs: getrepos
     strategy:
       max-parallel: 5
       matrix:
         repo: ${{ fromJson(needs.getrepos.outputs.repoarray) }}
+        exclude:
+          - repo: "terraform-azurerm-avm-template"
     steps:
       - name: install grept
         run: |
@@ -91,7 +95,7 @@ jobs:
           PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
-          GH_TOKEN: ${{ secrets.USER_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKE }}
         working-directory: ${{ matrix.repo }}
 
       - name: close and comment out of date prs
@@ -100,5 +104,5 @@ jobs:
           PULL_REQUESTS=$(gh pr list --search "fix: repository governance" --json number)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ secrets.USER_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ${{ matrix.repo }}
