@@ -133,6 +133,7 @@ jobs:
           echo 'result=failed' >> "$GITHUB_ENV"
 
       - name: set output
+        if: ${{ always() }}
         id: set-output
         run: |
           echo "result=${{ env.result }}" >> "$GITHUB_OUTPUT"
@@ -146,3 +147,5 @@ jobs:
       - name: raise issue
         run: |
           gh issue create --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(needs.governance.outputs) }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
