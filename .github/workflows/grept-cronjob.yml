@@ -69,9 +69,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: grept apply
+      - name: grept apply and auto remediate
         run: |
-          grept apply ${{ env.GREPT_CONFIG }}
+          grept apply --auto ${{ env.GREPT_CONFIG }}
         working-directory: ${{ matrix.repo }}
 
       - name: detect changes
@@ -104,7 +104,7 @@ jobs:
           PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
 
       - name: close and comment out of date prs
@@ -113,5 +113,5 @@ jobs:
           PULL_REQUESTS=$(gh pr list --search "fix: repository governance" --json number)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
