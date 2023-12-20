@@ -45,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: getrepos
     env:
+      GITHUB_USER: matt-FFFFFF
       GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
     strategy:
       max-parallel: 5
@@ -65,7 +66,7 @@ jobs:
       - name: checkout remote
         id: checkout
         run: |
-          gh repo clone "https://github.com/Azure/${{ matrix.repo }}.git"
+          git clone "https://${{ env.GITHUB_USER }}:${{ secrets.USER_PAT }}@github.com/Azure/${{ matrix.repo }}.git"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
