@@ -91,10 +91,11 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git checkout -b "grept-apply-$(date +%s)"
+          BRANCH=$(grept-apply-$(date +%s))
+          git checkout -b "$BRANCH)"
           git add .
           git commit -m "fix: grept apply"
-          git push origin
+          git push --set-upstream origin "$BRANCH"
         working-directory: ${{ matrix.repo }}
 
       - name: create pull request
