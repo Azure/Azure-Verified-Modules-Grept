@@ -51,6 +51,8 @@ jobs:
       max-parallel: 5
       matrix:
         repo: ${{ fromJson(needs.getrepos.outputs.repoarray) }}
+        include:
+          - repo: "this-does-not-exist"
         exclude:
           - repo: "terraform-azurerm-avm-template"
       fail-fast: false
