@@ -18,7 +18,7 @@ jobs:
     name: get repos
     runs-on: ubuntu-latest
     env:
-      query: "terraform-azurerm-avm-res-keyvault user:azure"
+      query: "terraform-azurerm-avm-res-keyvault"
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
     steps:
@@ -26,7 +26,7 @@ jobs:
         id: graphql
         run: |
           RESULT=$(gh api graphql --paginate -f query='query {
-            search(query: "${{ inputs.query || env.query }}", type: REPOSITORY, first: 100) {
+            search(query: "${{ inputs.query || env.query }} user:azure", type: REPOSITORY, first: 100) {
                 repositoryCount
                 edges {
                   node {
