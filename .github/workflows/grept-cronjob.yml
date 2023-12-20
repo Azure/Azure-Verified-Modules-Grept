@@ -54,7 +54,7 @@ jobs:
       GITHUB_USER: matt-FFFFFF
       GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
     outputs:
-      ${{ matrix.repo }}_result: ${{ steps.set-output.outputs.result }}
+      result: ${{ steps.set-output.outputs.result }}
     strategy:
       max-parallel: 5
       matrix:
@@ -152,6 +152,8 @@ jobs:
     steps:
       - name: raise issue
         run: |
-          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
+          ## BLOCKED on matrix outputs: https://github.com/actions/runner/pull/2477
+          ## gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
+          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_number}}>"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
