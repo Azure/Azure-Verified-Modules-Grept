@@ -49,6 +49,11 @@ jobs:
         exclude:
           - repo: "terraform-azurerm-avm-template"
     steps:
+      - name: install go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
       - name: install grept
         run: |
           go install github.com/Azure/grept@latest
