@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       query:
-        description: 'GitHub search query'
+        description: '(Optional) GitHub search query for repos in the Azure organization'
         type: string
         required: false
         default: null
@@ -65,9 +65,9 @@ jobs:
           - repo: "terraform-azurerm-avm-template"
       fail-fast: false
     steps:
-      - name: set env result=true
+      - name: set env result=success
         run: |
-          echo 'result=success' >> "$GITHUB_ENV"
+          echo 'result=success,${{ matrix.repo }}' >> "$GITHUB_ENV"
 
       - name: install go
         uses: actions/setup-go@v4
@@ -133,10 +133,10 @@ jobs:
           GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
 
-      - name: set env result=true
+      - name: set env result=failure
         if: ${{ failure() }}
         run: |
-          echo 'result=failed' >> "$GITHUB_ENV"
+          echo 'result=failed,${{ matrix.repo }}' >> "$GITHUB_ENV"
 
       - name: set output
         if: ${{ always() }}
@@ -152,6 +152,6 @@ jobs:
     steps:
       - name: raise issue
         run: |
-          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(needs.governance.outputs) }}"
+          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(join(needs.governance.outputs)) }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
