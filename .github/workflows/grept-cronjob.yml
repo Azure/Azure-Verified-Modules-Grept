@@ -130,4 +130,4 @@ jobs:
           echo "Report"
           echo "======"
           echo
-          echo ${{ fromJson(needs.governance) }}
+          echo ${{ toJSON(needs.governance) }}
