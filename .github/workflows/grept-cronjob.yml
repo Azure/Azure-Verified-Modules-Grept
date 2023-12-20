@@ -54,7 +54,7 @@ jobs:
       GITHUB_USER: matt-FFFFFF
       GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
     outputs:
-      result: ${{ steps.set-output.outputs.result }}
+      ${{ matrix.repo }}_result: ${{ steps.set-output.outputs.result }}
     strategy:
       max-parallel: 5
       matrix:
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: set env result=success
         run: |
-          echo 'result=success,${{ matrix.repo }}' >> "$GITHUB_ENV"
+          echo 'result=success' >> "$GITHUB_ENV"
 
       - name: install go
         uses: actions/setup-go@v4
@@ -136,7 +136,7 @@ jobs:
       - name: set env result=failure
         if: ${{ failure() }}
         run: |
-          echo 'result=failed,${{ matrix.repo }}' >> "$GITHUB_ENV"
+          echo 'result=failed' >> "$GITHUB_ENV"
 
       - name: set output
         if: ${{ always() }}
@@ -152,6 +152,6 @@ jobs:
     steps:
       - name: raise issue
         run: |
-          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: ${{ toJSON(join(needs.governance.outputs)) }}"
+          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
