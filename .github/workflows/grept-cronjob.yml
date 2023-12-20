@@ -53,6 +53,7 @@ jobs:
         repo: ${{ fromJson(needs.getrepos.outputs.repoarray) }}
         exclude:
           - repo: "terraform-azurerm-avm-template"
+      fail-fast: false
     steps:
       - name: install go
         uses: actions/setup-go@v4
