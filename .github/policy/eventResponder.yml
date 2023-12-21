@@ -1,0 +1,23 @@
+id: avmGreptEventResponder
+name: AVM Grept Event Responder
+description: AVM Grept Event Responder
+resource: repository
+disabled: false
+
+configuration:
+  resourceManagementConfiguration:
+    eventResponderTasks:
+      - description: 'PR - close requests from forks'
+        if:
+          - payloadType: Pull_Request
+          - isAction:
+              action: Opened
+          - or:
+            - activitySenderHasPermission:
+                permission: read
+            - activitySenderHasPermission:
+                permission: none
+        then:
+          - addReply:
+              reply: "We do not accept pull requests from contributors without write access. Please contact a maintainer to make changes."
+          - closePullRequest:
