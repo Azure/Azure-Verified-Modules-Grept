@@ -7,7 +7,7 @@ disabled: false
 configuration:
   resourceManagementConfiguration:
     eventResponderTasks:
-      - description: 'PR - close requests from forks'
+      - description: PR - close requests from thos without write access
         if:
           - payloadType: Pull_Request
           - isAction:
@@ -19,5 +19,5 @@ configuration:
                 permission: none
         then:
           - addReply:
-              reply: "We do not accept pull requests from contributors without write access. Please contact a maintainer to make changes."
+              reply: We do not accept pull requests from contributors without write access. Please contact a maintainer to make changes.
           - closePullRequest:
