@@ -11,7 +11,7 @@ configuration:
         if:
           - payloadType: Pull_Request
           - and:
-            - IsOpen
+            - isOpen
             - or:
               - isAction:
                   action: Opened
