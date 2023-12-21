@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '43 0 * * 0'
   workflow_dispatch:
+    inputs:
+      query:
+        description: '(Optional) GitHub search query for repos in the Azure organization'
+        type: string
+        required: false
+        default: null
 
 permissions:
   issues: write
@@ -13,15 +19,15 @@ jobs:
     name: get repos
     runs-on: ubuntu-latest
     env:
-      query: "terraform-azurerm-avm-res-keyvault user:azure"
+      query: "terraform-azurerm-avm-res-keyvault"
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
     steps:
       - name: query GitHub graphql API
-        id: graphql
+        id: graphql # TODO replace with CSV output when ready
         run: |
           RESULT=$(gh api graphql --paginate -f query='query {
-            search(query: "${{ env.query }}", type: REPOSITORY, first: 100) {
+            search(query: "${{ inputs.query || env.query }} user:azure", type: REPOSITORY, first: 100) {
                 repositoryCount
                 edges {
                   node {
@@ -47,6 +53,8 @@ jobs:
     env:
       GITHUB_USER: matt-FFFFFF
       GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
+    outputs:
+      result: ${{ steps.set-output.outputs.result }}
     strategy:
       max-parallel: 5
       matrix:
@@ -55,6 +63,10 @@ jobs:
           - repo: "terraform-azurerm-avm-template"
       fail-fast: false
     steps:
+      - name: set env result=success
+        run: |
+          echo 'result=success' >> "$GITHUB_ENV"
+
       - name: install go
         uses: actions/setup-go@v4
         with:
@@ -119,15 +131,27 @@ jobs:
           GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
 
+      - name: set env result=failure
+        if: ${{ failure() }}
+        run: |
+          echo 'result=failed' >> "$GITHUB_ENV"
+
+      - name: set output
+        if: ${{ always() }}
+        id: set-output
+        run: |
+          echo "result=${{ env.result }}" >> "$GITHUB_OUTPUT"
+
   report:
     name: report
     runs-on: ubuntu-latest
     needs: governance
     if: ${{ failure() }}
     steps:
-      - name: report
+      - name: raise issue
         run: |
-          echo "Report"
-          echo "======"
-          echo
-          echo ${{ fromJson(needs.governance) }}
+          ## BLOCKED on matrix outputs: https://github.com/actions/runner/pull/2477
+          ## gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
+          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_id}}>"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
