@@ -87,6 +87,9 @@ jobs:
         run: |
           grept apply --auto ${{ env.GREPT_CONFIG }}
         working-directory: ${{ matrix.repo }}
+        env:
+          GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
+          GITHUB_REPOSITORY_OWNER: Azure
 
       - name: detect changes
         id: changes
