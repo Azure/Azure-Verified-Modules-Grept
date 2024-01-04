@@ -13,7 +13,7 @@ rule "file_hash" "e2e_yaml" {
 
   precondition {
     condition     = local.github_repository_name_without_owner != "" && local.github_repository_name != ""
-    error_message = "The followinng evironment variables must be set: Either GITHUB_REPOSITORY_OWNER or OVERRIDE_GITHUB_REPOSITORY_OWNER, and GITHUB_REPOSITORY or OVERRIDE_GITHUB_REPOSITORY_OWNER."
+    error_message = "The followinng evironment variables must be set: Either GITHUB_REPOSITORY_OWNER or OVERRIDE_GITHUB_REPOSITORY_OWNER, and GITHUB_REPOSITORY or OVERRIDE_GITHUB_REPOSITORY."
   }
 
   glob = ".github/workflows/e2e.yml"
