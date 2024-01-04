@@ -7,6 +7,11 @@ data "http" "support_md" {
 }
 
 rule "file_hash" "support_md" {
+  precondition {
+    condition     = local.github_repository_name_without_owner != "" && local.github_repository_name != ""
+    error_message = "The followinng evironment variables must be set: Either GITHUB_REPOSITORY_OWNER or OVERRIDE_GITHUB_REPOSITORY_OWNER, and GITHUB_REPOSITORY or OVERRIDE_GITHUB_REPOSITORY."
+  }
+
   glob = "SUPPORT.md"
   hash = sha1(local.rendered_support_md)
 }
