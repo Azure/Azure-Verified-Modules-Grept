@@ -90,6 +90,7 @@ jobs:
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
           OVERRIDE_GITHUB_REPOSITORY_OWNER: Azure
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: detect changes
         id: changes
