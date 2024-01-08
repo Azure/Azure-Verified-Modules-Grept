@@ -1,5 +1,7 @@
 data "http" "avm_script" {
   url = "${local.url_prefix}/avm"
+
+  request_headers = merge({}, local.common_http_headers)
 }
 
 rule "file_hash" "avm_script" {
