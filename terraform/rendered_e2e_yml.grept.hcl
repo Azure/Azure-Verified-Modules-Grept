@@ -5,7 +5,8 @@ locals {
 data "http" "e2e_yaml" {
   for_each = contains(local.repo_urls_that_bypass_e2e_yml_sync, local.github_repository_url) ? [] : toset(["e2e_yaml"])
 
-  url = "${local.url_prefix}/.github/workflows/e2e.yml"
+  request_headers = merge({}, local.common_http_headers)
+  url             = "${local.url_prefix}/.github/workflows/e2e.yml"
 }
 
 rule "file_hash" "e2e_yaml" {
