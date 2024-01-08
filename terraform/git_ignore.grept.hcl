@@ -22,9 +22,7 @@ locals {
   ])
 }
 
-data "git_ignore" "current_ignored_items" {
-  request_headers = merge({}, local.common_http_headers)
-}
+data "git_ignore" "current_ignored_items" {}
 
 rule "must_be_true" "essential_ignored_items" {
   condition = length(compliment(local.ignored_items, data.git_ignore.current_ignored_items.records)) == 0
