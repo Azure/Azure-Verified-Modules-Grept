@@ -6,6 +6,7 @@ locals {
     ".github/workflows/linting.yml",
     ".github/workflows/version-check.yml",
     ".terraform-docs.yml",
+    "avm.bat",
     "CODE_OF_CONDUCT.md",
     "examples/.terraform-docs.yml",
     "LICENSE",
