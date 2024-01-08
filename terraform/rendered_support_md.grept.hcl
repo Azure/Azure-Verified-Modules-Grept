@@ -3,7 +3,8 @@ locals {
 }
 
 data "http" "support_md" {
-  url = "${local.url_prefix}/SUPPORT.md"
+  request_headers = merge({}, local.common_http_headers)
+  url             = "${local.url_prefix}/SUPPORT.md"
 }
 
 rule "file_hash" "support_md" {

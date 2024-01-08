@@ -18,7 +18,8 @@ locals {
 data "http" "synced_files" {
   for_each = local.synced_files
 
-  url = "${local.url_prefix}/${each.value}"
+  request_headers = merge({}, local.common_http_headers)
+  url             = "${local.url_prefix}/${each.value}"
 }
 
 rule "file_hash" "synced_files" {
