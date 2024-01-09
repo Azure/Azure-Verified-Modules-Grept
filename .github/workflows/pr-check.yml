@@ -7,13 +7,13 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
+  TERRAFORM_GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
 
 jobs:
   prepr-check:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout template repo
+      - name: checkout terraform template repo
         run: |
           git clone https://github.com/Azure/terraform-azurerm-avm-template.git
       - name: install go
@@ -23,9 +23,9 @@ jobs:
       - name: install grept
         run: |
           go install github.com/Azure/grept@latest
-      - name: plan
+      - name: plan against terraform template
         run: |
-          OUTPUT=$(grept plan $GREPT_CONFIG)
+          OUTPUT=$(grept plan $TERRAFORM_GREPT_CONFIG)
           echo "$OUTPUT"
           echo "$OUTPUT" | grep -q "All rule checks successful, nothing to do."
         working-directory: terraform-azurerm-avm-template
