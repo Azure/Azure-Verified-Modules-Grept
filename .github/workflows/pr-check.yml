@@ -25,7 +25,9 @@ jobs:
           go install github.com/Azure/grept@latest
       - name: plan
         run: |
-          grept plan $GREPT_CONFIG
+          OUTPUT=$(grept plan $GREPT_CONFIG)
+          echo "$OUTPUT"
+          echo "$OUTPUT" | grep -q "All rule checks successful, nothing to do."
         working-directory: terraform-azurerm-avm-template
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/terraform-azurerm-avm-template
