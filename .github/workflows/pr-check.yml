@@ -1,0 +1,32 @@
+name: Pre Pull Request Check
+on:
+  pull_request:
+    types: [ 'opened', 'synchronize', 'reopened']
+    paths:
+      - 'terraform/**'
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
+
+jobs:
+  prepr-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout template repo
+        run: |
+          git clone https://github.com/Azure/terraform-azurerm-avm-template.git
+      - name: install go
+        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe #v4.1.0
+        with:
+          go-version: '1.21'
+      - name: install grept
+        run: |
+          go install github.com/Azure/grept@latest
+      - name: plan
+        run: |
+          grept plan $GREPT_CONFIG
+        working-directory: terraform-azurerm-avm-template
+        env:
+          OVERRIDE_GITHUB_REPOSITORY: Azure/terraform-azurerm-avm-template
+          OVERRIDE_GITHUB_REPOSITORY_OWNER: Azure
