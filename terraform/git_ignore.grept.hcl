@@ -12,6 +12,8 @@ locals {
     "*tfplan*",
     "avm.tflint_example.hcl",
     "avm.tflint.hcl",
+    "avm.tflint.merged.hcl",
+    "avm.tflint_example.merged.hcl",
     "avmmakefile",
     "crash.*.log",
     "crash.log",
