@@ -128,6 +128,7 @@ jobs:
         working-directory: ${{ matrix.repo }}
 
       - name: show body
+        if: steps.changes.outputs.detected == 'true'
         run: |
           echo "Displaying PR body:"
           cat prbody.md
