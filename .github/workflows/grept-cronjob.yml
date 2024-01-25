@@ -125,7 +125,7 @@ jobs:
           Thanks! The AVM team :heart:
           EOF
           echo
-          echo Displaying PR body:
+          echo Displaying PR body ("${{ github.workspace }}/prbody.md):
           cat "${{ github.workspace }}/prbody.md"
         working-directory: ${{ github.workspace }}
 
