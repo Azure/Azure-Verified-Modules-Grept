@@ -147,7 +147,6 @@ jobs:
         run: |
           PULL_REQUESTS=$(gh pr list --search "chore: repository governance" --json number,headRefName)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
-          echo "$PULL_REQUESTS" | jq -r '.[] | .headRefName' | xargs -I {} git push origin --delete {} || true
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
