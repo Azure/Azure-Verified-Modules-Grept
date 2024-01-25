@@ -166,7 +166,7 @@ jobs:
     name: report
     runs-on: ubuntu-latest
     needs: governance
-    if: ${{ failure() }} && github.ref == 'refs/heads/main'
+    if: ${{ failure() }}
     steps:
       - name: raise issue
         run: |
