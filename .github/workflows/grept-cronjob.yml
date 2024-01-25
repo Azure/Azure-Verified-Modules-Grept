@@ -102,6 +102,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           BRANCH="grept-apply-$(date +%s)"
+          echo "branch=$BRANCH" >> "$GITHUB_ENV"
           git checkout -b "$BRANCH"
           git add .
           git commit -m "fix: grept apply"
@@ -155,6 +156,8 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo 'result=failed' >> "$GITHUB_ENV"
+          git push origin --delete "${{ env.branch }}"
+
 
       - name: set output
         if: ${{ always() }}
