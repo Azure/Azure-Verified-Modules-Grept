@@ -124,7 +124,9 @@ jobs:
 
           Thanks! The AVM team :heart:
           EOF
-
+          echo
+          echo Displaying PR body:
+          cat "${{ github.workspace }}/prbody.md"
         working-directory: ${{ github.workspace }}
 
       - name: create pull request
