@@ -172,6 +172,6 @@ jobs:
         run: |
           ## BLOCKED on matrix outputs: https://github.com/actions/runner/pull/2477
           ## gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
-          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_id}}>"
+          gh issue create --repo ${{ github.repository }} --assignee matt-FFFFFF --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_id}}>"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
