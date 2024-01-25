@@ -124,7 +124,7 @@ jobs:
 
           Thanks! The AVM team :heart:
           EOF
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ matrix.repo }}
 
       - name: show body
         run: |
