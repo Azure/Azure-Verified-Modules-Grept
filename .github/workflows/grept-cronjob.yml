@@ -77,7 +77,7 @@ jobs:
       - name: grept apply and auto remediate
         run: |
           echo "==> Checking code repository with grept against git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform ..."
-          docker run --pull always --rm -v "$(pwd)":/src -w /src mcr.microsoft.com/azterraform:latest "/usr/local/go/bin/grept" "apply --auto ${{ env.GREPT_CONFIG }}"
+          docker run --pull always --rm -v "$(pwd)":/src -w /src mcr.microsoft.com/azterraform:latest "/usr/local/go/bin/grept apply --auto ${{ env.GREPT_CONFIG }}"
         working-directory: ${{ matrix.repo }}
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
