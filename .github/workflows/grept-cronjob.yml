@@ -67,15 +67,6 @@ jobs:
         run: |
           echo 'result=success' >> "$GITHUB_ENV"
 
-      - name: install go
-        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe #v4.1.0
-        with:
-          go-version: '1.21'
-
-      - name: install grept
-        run: |
-          go install github.com/Azure/grept@latest
-
       - name: checkout remote
         id: checkout
         run: |
@@ -85,7 +76,9 @@ jobs:
 
       - name: grept apply and auto remediate
         run: |
-          grept apply --auto ${{ env.GREPT_CONFIG }}
+          echo "==> Checking code repository with grept against git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform ..."
+          docker pull mcr.microsoft.com/azterraform
+          docker run --rm -v "$(pwd)":/src -w /src mcr.microsoft.com/azterraform:latest "grept apply --auto ${{ env.GREPT_CONFIG }}"
         working-directory: ${{ matrix.repo }}
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
