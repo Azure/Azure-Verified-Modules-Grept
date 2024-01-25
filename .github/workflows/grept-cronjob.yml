@@ -76,7 +76,7 @@ jobs:
 
       - name: grept apply and auto remediate
         run: |
-          echo "==> Checking code repository with grept against git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform ..."
+          echo "==> Checking code repository with grept against ${{ env.GREPT_CONFIG }}..."
           docker run --pull always --rm -v "$(pwd)":/src -w /src -e OVERRIDE_GITHUB_REPOSITORY="$OVERRIDE_GITHUB_REPOSITORY" -e OVERRIDE_GITHUB_REPOSITORY_OWNER="$OVERRIDE_GITHUB_REPOSITORY_OWNER" mcr.microsoft.com/azterraform:latest /usr/local/go/bin/grept apply --auto "${{ env.GREPT_CONFIG }}"
         working-directory: ${{ matrix.repo }}
         env:
@@ -108,11 +108,30 @@ jobs:
           git push --set-upstream origin "$BRANCH"
         working-directory: ${{ matrix.repo }}
 
+      - name: create PR body
+        if: steps.changes.outputs.detected == 'true'
+        id: prbody
+        run: |
+          <<EOF > prbody.md
+          ## Repository governance update
+
+          This PR was automatically created by the AVM Team hive-mind using the [grept](https://github.com/Azure/grept) governance tool.
+
+          We have detected that some files need updating to meet the AVM governance standards.
+          Please review and merge with alacrity.
+
+          Grept config source: `${{ env.GREPT_CONFIG }}`
+
+          Thanks! The AVM team :heart:
+          EOF
+
+        working-directory: ${{ github.workspace }}
+
       - name: create pull request
         if: steps.changes.outputs.detected == 'true'
         id: pr
         run: |
-          PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
+          PR_URL=$(gh pr create --title "fix: repository governance" --body-file "${{ github.workspace }}/prbody.md")
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
@@ -142,7 +161,7 @@ jobs:
     name: report
     runs-on: ubuntu-latest
     needs: governance
-    if: ${{ failure() }}
+    if: ${{ failure() }} && github.ref == 'refs/heads/main'
     steps:
       - name: raise issue
         run: |
