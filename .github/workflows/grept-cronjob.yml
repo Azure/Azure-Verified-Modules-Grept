@@ -19,7 +19,7 @@ jobs:
     name: get repos
     runs-on: ubuntu-latest
     env:
-      query: "terraform-azurerm-avm-res-keyvault"
+      query: "terraform-azurerm-avm-"
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
     steps:
@@ -67,15 +67,6 @@ jobs:
         run: |
           echo 'result=success' >> "$GITHUB_ENV"
 
-      - name: install go
-        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe #v4.1.0
-        with:
-          go-version: '1.21'
-
-      - name: install grept
-        run: |
-          go install github.com/Azure/grept@latest
-
       - name: checkout remote
         id: checkout
         run: |
@@ -85,7 +76,8 @@ jobs:
 
       - name: grept apply and auto remediate
         run: |
-          grept apply --auto ${{ env.GREPT_CONFIG }}
+          echo "==> Checking code repository with grept against ${{ env.GREPT_CONFIG }}..."
+          docker run --pull always --rm -v "$(pwd)":/src -w /src -e OVERRIDE_GITHUB_REPOSITORY="$OVERRIDE_GITHUB_REPOSITORY" -e OVERRIDE_GITHUB_REPOSITORY_OWNER="$OVERRIDE_GITHUB_REPOSITORY_OWNER" mcr.microsoft.com/azterraform:latest /usr/local/go/bin/grept apply --auto "${{ env.GREPT_CONFIG }}"
         working-directory: ${{ matrix.repo }}
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
@@ -110,17 +102,42 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           BRANCH="grept-apply-$(date +%s)"
+          echo "branch=$BRANCH" >> "$GITHUB_ENV"
           git checkout -b "$BRANCH"
           git add .
           git commit -m "fix: grept apply"
           git push --set-upstream origin "$BRANCH"
         working-directory: ${{ matrix.repo }}
 
+      - name: create PR body
+        if: steps.changes.outputs.detected == 'true'
+        id: prbody
+        run: |
+          tee prbody.md <<EOF
+          ## Repository governance update
+
+          This PR was automatically created by the AVM Team hive-mind using the [grept](https://github.com/Azure/grept) governance tool.
+
+          We have detected that some files need updating to meet the AVM governance standards.
+          Please review and merge with alacrity.
+
+          Grept config source: \`${{ env.GREPT_CONFIG }}\`
+
+          Thanks! The AVM team :heart:
+          EOF
+        working-directory: ${{ matrix.repo }}
+
+      - name: show body
+        run: |
+          echo "Displaying PR body:"
+          cat prbody.md
+        working-directory: ${{ matrix.repo }}
+
       - name: create pull request
         if: steps.changes.outputs.detected == 'true'
         id: pr
         run: |
-          PR_URL=$(gh pr create --title "fix: repository governance" --body "This PR was automatically created by the AVM grept governance tool")
+          PR_URL=$(gh pr create --title "chore: repository governance" --body-file prbody.md)
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
@@ -129,7 +146,7 @@ jobs:
       - name: close and comment out of date prs
         if: steps.changes.outputs.detected == 'true'
         run: |
-          PULL_REQUESTS=$(gh pr list --search "fix: repository governance" --json number)
+          PULL_REQUESTS=$(gh pr list --search "chore: repository governance" --json number,headRefName)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
@@ -139,6 +156,9 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo 'result=failed' >> "$GITHUB_ENV"
+          git push origin --delete "${{ env.branch }}"
+        working-directory: ${{ matrix.repo }}
+
 
       - name: set output
         if: ${{ always() }}
@@ -156,6 +176,6 @@ jobs:
         run: |
           ## BLOCKED on matrix outputs: https://github.com/actions/runner/pull/2477
           ## gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks:\n\n```json\n${{ toJSON(join(needs.governance.outputs)) }}\n```\n"
-          gh issue create --repo ${{ github.repository }} --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_id}}>"
+          gh issue create --repo ${{ github.repository }} --assignee matt-FFFFFF --title "Repository governance failure" --body "The following repositories failed governance checks: <${{ github.server_url}}/${{ github.repository }}/actions/runs/${{ github.run_id}}>"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
