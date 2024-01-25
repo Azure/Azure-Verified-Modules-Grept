@@ -112,7 +112,7 @@ jobs:
         if: steps.changes.outputs.detected == 'true'
         id: prbody
         run: |
-          <<EOF > prbody.md
+          tee prbody.md <<EOF
           ## Repository governance update
 
           This PR was automatically created by the AVM Team hive-mind using the [grept](https://github.com/Azure/grept) governance tool.
