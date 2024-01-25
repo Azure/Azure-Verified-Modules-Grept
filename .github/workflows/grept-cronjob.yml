@@ -136,7 +136,7 @@ jobs:
         if: steps.changes.outputs.detected == 'true'
         id: pr
         run: |
-          PR_URL=$(gh pr create --title "chore: repository governance" --body-file "${{ github.workspace }}/prbody.md")
+          PR_URL=$(gh pr create --title "chore: repository governance" --body-file prbody.md)
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
@@ -145,8 +145,9 @@ jobs:
       - name: close and comment out of date prs
         if: steps.changes.outputs.detected == 'true'
         run: |
-          PULL_REQUESTS=$(gh pr list --search "chore: repository governance" --json number)
+          PULL_REQUESTS=$(gh pr list --search "chore: repository governance" --json number,headRefName)
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
+          echo "$PULL_REQUESTS" | jq -r '.[] | .headRefName' | xargs -I {} git push origin --delete || true
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
         working-directory: ${{ matrix.repo }}
