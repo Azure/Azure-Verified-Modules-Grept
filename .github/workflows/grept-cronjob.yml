@@ -120,7 +120,7 @@ jobs:
           We have detected that some files need updating to meet the AVM governance standards.
           Please review and merge with alacrity.
 
-          Grept config source: `${{ env.GREPT_CONFIG }}`
+          Grept config source: \`${{ env.GREPT_CONFIG }}\`
 
           Thanks! The AVM team :heart:
           EOF
