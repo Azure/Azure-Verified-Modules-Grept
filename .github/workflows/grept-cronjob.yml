@@ -157,6 +157,7 @@ jobs:
         run: |
           echo 'result=failed' >> "$GITHUB_ENV"
           git push origin --delete "${{ env.branch }}"
+        working-directory: ${{ matrix.repo }}
 
 
       - name: set output
