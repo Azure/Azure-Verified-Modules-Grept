@@ -78,7 +78,7 @@ jobs:
         run: |
           echo "==> Checking code repository with grept against git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform ..."
           docker pull mcr.microsoft.com/azterraform
-          docker run --rm -v "$(pwd)":/src -w /src mcr.microsoft.com/azterraform:latest "grept apply --auto ${{ env.GREPT_CONFIG }}"
+          docker run --rm -v "$(pwd)":/src -w /src mcr.microsoft.com/azterraform:latest "/usr/local/bin/grept" "apply --auto ${{ env.GREPT_CONFIG }}"
         working-directory: ${{ matrix.repo }}
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
