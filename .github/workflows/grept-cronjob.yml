@@ -128,7 +128,7 @@ jobs:
 
       - name: show body
         run: |
-          echo "Displaying PR body ("${{ github.workspace }}/prbody.md):"
+          echo "Displaying PR body (${{ github.workspace }}/prbody.md):"
           cat "${{ github.workspace }}/prbody.md"
         working-directory: ${{ matrix.repo }}
 
