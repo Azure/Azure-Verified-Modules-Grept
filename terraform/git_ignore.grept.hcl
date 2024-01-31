@@ -22,7 +22,7 @@ locals {
     "README-generated.md",
     "terraform.rc",
     ".DS_Store",
-    "*.md.tmp"
+    "*.md.tmp",
   ])
 }
 
