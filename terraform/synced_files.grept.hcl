@@ -2,6 +2,7 @@ locals {
   synced_files = toset([
     "_footer.md",
     ".github/CODEOWNERS",
+    ".github/ISSUE_TEMPLATE/avm_module_issue.yml",
     ".github/policies/avmrequiredfiles.yml",
     ".github/workflows/linting.yml",
     ".github/workflows/version-check.yml",
