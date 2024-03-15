@@ -46,8 +46,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  governance:
-    name: governance
+  sync-labels:
+    name: sync
     runs-on: ubuntu-latest
     needs: getrepos
     env:
@@ -62,17 +62,12 @@ jobs:
           - repo: "terraform-azurerm-avm-template"
       fail-fast: false
     steps:
-      - name: sync labels
+      - name: run avm github labels script
         shell: pwsh
         run: |
-          # $headers = @{
-          #     "Authorization" = "Bearer $GITHUB_TOKEN"
-          #     "Accept" = "application/vnd.github.v3+json"
-          # }
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Azure/Azure-Verified-Modules/main/docs/static/scripts/Set-AvmGitHubLabels.ps1" -OutFile "./Set-AvmGitHubLabels.ps1"
-          # ./Set-AvmGitHubLabels.ps1 -RepositoryName "${{ matrix.repo }}" -CreateCsvLabelExports $false -RemoveExistingLabels $false -NoUserPrompts $true
+          ./Set-AvmGitHubLabels.ps1 -RepositoryName "Azure/${{ matrix.repo }}" -CreateCsvLabelExports $false -RemoveExistingLabels $false -NoUserPrompts $true
           echo ${{ matrix.repo }}
         env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.USER_PAT }}
 
