@@ -44,7 +44,7 @@ jobs:
           echo repoarray="$REPOARRAY"
           echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.USER_PAT }}
 
   sync-labels:
     name: sync
