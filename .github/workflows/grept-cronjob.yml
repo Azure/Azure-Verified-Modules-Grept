@@ -25,7 +25,24 @@ jobs:
     steps:
       - name: query GitHub graphql API
         id: graphql # TODO replace with CSV output when ready
-        run: RESULT= gh repo list azure -L 5000 --json name --jq '.[].name' | grep terraform-azurerm-avm; echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
+        run: |
+          RESULT=$(gh api graphql --paginate -f query='query {
+            search(query: "${{ inputs.query || env.query }} user:azure", type: REPOSITORY, first: 100) {
+                repositoryCount
+                edges {
+                  node {
+                    ... on Repository {
+                      name
+                    }
+                  }
+                }
+              }
+            }')
+          NUMREPOS=$(echo $RESULT | jq '.data.search.repositoryCount')
+          echo "Number of repos found: $NUMREPOS"
+          REPOARRAY=$(echo $RESULT | jq -c '.data.search.edges | [.[].node.name]')
+          echo repoarray="$REPOARRAY"
+          echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
 
