@@ -27,7 +27,7 @@ jobs:
         id: graphql # TODO replace with CSV output when ready
         run: gh repo list azure -L 5000 --json name --jq '.[].name' | grep terraform-azurerm-avm
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.USER_PAT }}
 
   governance:
     name: governance
