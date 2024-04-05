@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: query GitHub graphql API
         id: graphql # TODO replace with CSV output when ready
-        run: gh repo list azure -L 5000 --json name --jq '.[].name' | grep terraform-azurerm-avm
+        run: RESULT= gh repo list azure -L 5000 --json name --jq '.[].name' | grep terraform-azurerm-avm; echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.USER_PAT }}
 
