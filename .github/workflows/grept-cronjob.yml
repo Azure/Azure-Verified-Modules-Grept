@@ -56,7 +56,7 @@ jobs:
     outputs:
       result: ${{ steps.set-output.outputs.result }}
     strategy:
-      max-parallel: 5
+      max-parallel: 2
       matrix:
         repo: ${{ fromJson(needs.getrepos.outputs.repoarray) }}
         exclude:
@@ -168,6 +168,11 @@ jobs:
         id: set-output
         run: |
           echo "result=${{ env.result }}" >> "$GITHUB_OUTPUT"
+
+      - name: sleep for rate limit
+        if: ${{ always() }}
+        id: sleep
+        run: sleep 30
 
   report:
     name: report
