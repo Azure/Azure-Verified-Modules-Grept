@@ -18,6 +18,7 @@ locals {
     "LICENSE",
     "Makefile",
     "SECURITY.md",
+    ".vscode/settings.json",
   ])
 }
 
