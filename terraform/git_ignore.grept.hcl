@@ -11,6 +11,8 @@ locals {
     "**/.terraform/*",
     "*tfplan*",
     "avm.tflint_example.hcl",
+    "avm.tflint_module.hcl",
+    "avm.tflint_module.merged.hcl",
     "avm.tflint.hcl",
     "avm.tflint.merged.hcl",
     "avm.tflint_example.merged.hcl",
