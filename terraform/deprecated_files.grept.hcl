@@ -5,7 +5,7 @@ locals {
   ])
 }
 
-rule "must_be_true" "deprecated__file" {
+rule "must_be_true" "deprecated_file" {
   for_each = local.deprecated_files
   condition = !fileexists(each.value)
 }
