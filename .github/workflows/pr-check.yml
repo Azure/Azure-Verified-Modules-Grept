@@ -7,12 +7,17 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  TERRAFORM_GREPT_CONFIG: "git::https://github.com/Azure/Azure-Verified-Modules-Grept.git//terraform"
+  TERRAFORM_GREPT_CONFIG: "grept/terraform"
 
 jobs:
   prepr-check:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout current config
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: 'grept'
       - name: checkout terraform template repo
         run: |
           git clone https://github.com/Azure/terraform-azurerm-avm-template.git
