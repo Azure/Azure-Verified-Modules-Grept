@@ -7,7 +7,7 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  TERRAFORM_GREPT_CONFIG: "/home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/terraform"
+  TERRAFORM_GREPT_CONFIG: "/home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/grept/terraform"
 
 jobs:
   prepr-check:
@@ -30,7 +30,7 @@ jobs:
           go install github.com/Azure/grept@latest
       - name: ls policy dir
         run: |
-          cd /home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept
+          cd /home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/grept
           ls -la
       - name: plan against terraform template
         run: |
