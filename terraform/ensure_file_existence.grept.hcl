@@ -3,11 +3,6 @@ locals {
     "main.tf" : "",
     "terraform.tf" : ""
     "_header.md" : "",
-    "locals.version.tf.json" : jsonencode({
-      locals = {
-        module_version = "0.1.0"
-      }
-    })
   })
 }
 
