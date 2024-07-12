@@ -28,10 +28,6 @@ jobs:
       - name: install grept
         run: |
           go install github.com/Azure/grept@latest
-      - name: ls policy dir
-        run: |
-          cd /home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/grept
-          ls -la
       - name: plan against terraform template
         run: |
           OUTPUT=$(grept plan $TERRAFORM_GREPT_CONFIG)
