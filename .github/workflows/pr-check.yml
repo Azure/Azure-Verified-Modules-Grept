@@ -7,7 +7,7 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  TERRAFORM_GREPT_CONFIG: "/home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/grept"
+  TERRAFORM_GREPT_CONFIG: "/home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept/terraform"
 
 jobs:
   prepr-check:
