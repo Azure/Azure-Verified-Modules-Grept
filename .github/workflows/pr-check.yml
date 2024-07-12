@@ -7,7 +7,7 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  TERRAFORM_GREPT_CONFIG: "grept/terraform"
+  TERRAFORM_GREPT_CONFIG: "./grept/terraform"
 
 jobs:
   prepr-check:
