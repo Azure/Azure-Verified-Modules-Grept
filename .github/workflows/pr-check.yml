@@ -28,9 +28,12 @@ jobs:
       - name: install grept
         run: |
           go install github.com/Azure/grept@latest
+      - name: ls policy dir
+        run: |
+          cd /home/runner/work/Azure-Verified-Modules-Grept/Azure-Verified-Modules-Grept
+          ls -la
       - name: plan against terraform template
         run: |
-          ls -la
           OUTPUT=$(grept plan $TERRAFORM_GREPT_CONFIG)
           echo "$OUTPUT"
           echo "$OUTPUT" | grep -q "All rule checks successful, nothing to do."
