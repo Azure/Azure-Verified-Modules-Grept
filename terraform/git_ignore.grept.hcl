@@ -2,8 +2,6 @@ locals {
   ignored_items = toset([
     ".terraform.lock.hcl",
     ".terraformrc",
-    "*_override.tf.json",
-    "*_override.tf",
     "*.tfstate.*",
     "*.tfstate",
     "*.tfvars.json",
