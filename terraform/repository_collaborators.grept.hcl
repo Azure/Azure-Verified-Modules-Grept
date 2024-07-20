@@ -55,35 +55,35 @@ data "github_team" repository_team {
   slug = each.value.name
 }
 
-# rule "must_be_true" repository_teams {
-#   for_each = local.wanted_repository_team
-#   condition = data.github_team.repository_team[each.key].team_name != null && data.github_team.repository_team[each.key].team_name != ""
-#   error_message = "No ${each.key} team found. Need to create a team with the name ${each.value.name}."
-# }
-#
-# fix "github_team" module_contributors_team {
-#   for_each = local.wanted_repository_team
-#   rule_ids = [rule.must_be_true.repository_teams[each.key].id]
-#   owner = local.github_repository_owner
-#   team_name = each.value.name
-#   description = "${each.key} for ${local.current_module.ModuleName} module."
-#   privacy = "closed"
-# }
-#
-# fix "github_team_members" module_contributors_team {
-#   for_each = local.wanted_repository_team
-#   rule_ids = [rule.must_be_true.repository_teams[each.key].id]
-#   owner = local.github_repository_owner
-#   team_slug = each.value.name
-#   dynamic "member" {
-#     for_each = each.value.members
-#     content {
-#       username = member.value
-#       role = "maintainer"
-#     }
-#   }
-#   depends_on = [fix.github_team.module_contributors_team]
-# }
+rule "must_be_true" repository_teams {
+  for_each = local.wanted_repository_team
+  condition = data.github_team.repository_team[each.key].team_name != null && data.github_team.repository_team[each.key].team_name != ""
+  error_message = "No ${each.key} team found. Need to create a team with the name ${each.value.name}."
+}
+
+fix "github_team" repository_teams {
+  for_each = local.wanted_repository_team
+  rule_ids = [rule.must_be_true.repository_teams[each.key].id]
+  owner = local.github_repository_owner
+  team_name = each.value.name
+  description = "${each.key} for ${local.current_module.ModuleName} module."
+  privacy = "closed"
+}
+
+fix "github_team_members" repository_team_members {
+  for_each = local.wanted_repository_team
+  rule_ids = [rule.must_be_true.repository_teams[each.key].id]
+  owner = local.github_repository_owner
+  team_slug = each.value.name
+  dynamic "member" {
+    for_each = each.value.members
+    content {
+      username = member.value
+      role = "maintainer"
+    }
+  }
+  depends_on = [fix.github_team.repository_teams]
+}
 //
 
 # locals {
