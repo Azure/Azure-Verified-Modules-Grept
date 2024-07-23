@@ -47,6 +47,24 @@ locals {
         permission = "admin",
     }
   }
+  wanted_avm_team = {
+    avm_core_team_technical = {
+      name = "avm-core-team-technical-terraform"
+      permission = "admin"
+    }
+    azurecla-write = {
+      name = "azurecla-write"
+      permission = "push"
+    }
+    security = {
+      name = "security"
+      permission = "pull"
+    }
+    terraform-avm = {
+      name = "terraform-avm"
+      permission = "admin"
+    }
+  }
 }
 
 data "github_team" repository_team {
@@ -84,30 +102,36 @@ fix "github_team_members" repository_team_members {
   }
   depends_on = [fix.github_team.repository_teams]
 }
-//
 
-# locals {
-#   contributors_team_attached = length([ for team in data.github_repository_teams.this.teams : team if team.slug == "${local.current_module.ModuleName}-module-contributors-tf" && team.permission == "push" ]) == 1
-# }
-#
-# rule "must_be_true" module_contributors_team {
-#   condition = local.contributors_team_attached
-#   error_message = "contributors team not attached with `push` permission."
-# }
-#
-# fix "github_team_repository" module_contributors_team {
-#   rule_ids = [rule.must_be_true.module_contributors_team.id]
-#   owner = local.github_repository_owner
-#   repo_name = local.github_repository_name_without_owner
-#   team {
-#     team_slug = "${local.current_module.ModuleName}-module-contributors-tf"
-#     permission = "push"
-#   }
-#   depends_on = [fix.github_team.module_contributors_team]
-# }
+rule "must_be_true" repository_teams_attached {
+  for_each = local.wanted_repository_team
+  condition = length([ for team in data.github_repository_teams.this.teams : team if team.name == each.value.name && team.permission == each.value.permission ]) == 1
+  error_message = "No ${each.key} team with expected permission ${each.value.permission} found. Need to add the team ${each.value.name} to the repository with the permissions ${each.value.permission}."
+}
 
-# fix "github_repository_teams" required_teams {
-#   rule_ids = [rule.must_be_true.no_personal_collaborators.id]
-#   owner = local.github_repository_owner
-#   repo_name = local.github_repository_name_without_owner
-# }
+fix "github_team_repository" this {
+  rule_ids = [ for k, r in merge(rule.must_be_true.repository_teams_attached, rule.must_be_true.avm_teams_attached) : r.id ]
+  owner = local.github_repository_owner
+  repo_name = local.github_repository_name_without_owner
+  dynamic "team" {
+    for_each = local.wanted_repository_team
+    content {
+      team_slug = team.value.name
+      permission = team.value.permission
+    }
+  }
+  dynamic "team" {
+    for_each = local.wanted_avm_team
+    content {
+      team_slug = team.value.name
+      permission = team.value.permission
+    }
+  }
+}
+
+rule "must_be_true" avm_teams_attached {
+  for_each = local.wanted_avm_team
+  condition = length([ for team in data.github_repository_teams.this.teams : team if team.name == each.value.name && team.permission == each.value.permission ]) == 1
+  error_message = "No ${each.key} team with expected permission ${each.value.permission} found. Need to add the team ${each.value.name} to the repository with the permissions ${each.value.permission}."
+}
+
