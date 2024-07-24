@@ -13,26 +13,21 @@ locals {
   current_module = local.all_avm_tf_modules["${local.github_repository_url}"]
 }
 
-data "github_repository_collaborators" this {
-  owner = local.github_repository_owner
-  repo_name = local.github_repository_name_without_owner
-}
-
-data "github_repository_teams" this {
-  owner = local.github_repository_owner
-  repo_name = local.github_repository_name_without_owner
-}
-
-rule "must_be_true" no_personal_collaborators {
-    condition = length(data.github_repository_collaborators.this.users) == 0
-    error_message = "No personal collaborators are allowed. Only teams are allowed."
-}
-
-fix "github_repository_collaborators" no_personal_collaborators {
-  rule_ids = [rule.must_be_true.no_personal_collaborators.id]
-  owner = local.github_repository_owner
-  repo_name = local.github_repository_name_without_owner
-}
+# data "github_repository_collaborators" this {
+#   owner = local.github_repository_owner
+#   repo_name = local.github_repository_name_without_owner
+# }
+#
+# rule "must_be_true" no_personal_collaborators {
+#     condition = length(data.github_repository_collaborators.this.users) == 0
+#     error_message = "No personal collaborators are allowed. Only teams are allowed."
+# }
+#
+# fix "github_repository_collaborators" no_personal_collaborators {
+#   rule_ids = [rule.must_be_true.no_personal_collaborators.id]
+#   owner = local.github_repository_owner
+#   repo_name = local.github_repository_name_without_owner
+# }
 
 locals {
   wanted_repository_team = {
@@ -88,9 +83,20 @@ fix "github_team" repository_teams {
   privacy = "closed"
 }
 
+data "github_repository_teams" this {
+  owner = local.github_repository_owner
+  repo_name = local.github_repository_name_without_owner
+}
+
+rule "must_be_true" repository_team_members {
+  for_each = local.wanted_repository_team
+  condition = toset(data.github_team.repository_team[each.key].members) == toset(each.value.members)
+  error_message = "Team ${each.key} members must match the expected members."
+}
+
 fix "github_team_members" repository_team_members {
   for_each = local.wanted_repository_team
-  rule_ids = [rule.must_be_true.repository_teams[each.key].id]
+  rule_ids = [rule.must_be_true.repository_team_members[each.key].id]
   owner = local.github_repository_owner
   team_slug = each.value.name
   dynamic "member" {
@@ -135,3 +141,27 @@ rule "must_be_true" avm_teams_attached {
   error_message = "No ${each.key} team with expected permission ${each.value.permission} found. Need to add the team ${each.value.name} to the repository with the permissions ${each.value.permission}."
 }
 
+data "github_repository_environments" this {
+  owner = local.github_repository_owner
+  repo_name = local.github_repository_name_without_owner
+}
+
+rule "must_be_true" environment {
+  condition = toset(data.github_repository_environments.this.environments.*.name) == toset(["test"])
+  error_message = "The repository must have a test environment."
+}
+
+fix "github_repository_environments" this {
+  rule_ids = [rule.must_be_true.environment.id]
+  owner = local.github_repository_owner
+  repo_name = local.github_repository_name_without_owner
+  environment {
+    name                = "test"
+    can_admins_bypass   = true
+    prevent_self_review = false
+    reviewer {
+      team_id = data.github_team.repository_team["module_owners"].team_id
+    }
+  }
+  depends_on = [fix.github_team.repository_teams]
+}
