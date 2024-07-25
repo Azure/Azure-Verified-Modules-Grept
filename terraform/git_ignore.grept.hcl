@@ -36,5 +36,5 @@ rule "must_be_true" "essential_ignored_items" {
 
 fix "git_ignore" "ensure_ignore" {
   rule_ids = [rule.must_be_true.essential_ignored_items.id]
-  exist   = local.ignored_items
+  exist    = local.ignored_items
 }
