@@ -11,6 +11,7 @@ data "http" "avm_ptn_module_csv" {
 locals {
   all_avm_tf_modules = { for obj in concat(csvdecode(data.http.avm_res_module_csv.response_body), csvdecode(data.http.avm_ptn_module_csv.response_body)) : obj.RepoURL => obj }
   current_module     = local.all_avm_tf_modules["${local.github_repository_url}"]
+  is_template_repo   = local.github_repository_name_without_owner == "terraform-azurerm-avm-template"
 }
 
 locals {
@@ -47,19 +48,19 @@ locals {
 }
 
 data "github_team" repository_team {
-  for_each = local.wanted_repository_team
+  for_each = local.is_template_repo ? {} : local.wanted_repository_team
   owner    = local.github_repository_owner
   slug     = each.value.name
 }
 
 rule "must_be_true" repository_teams {
-  for_each      = local.wanted_repository_team
+  for_each      = local.is_template_repo ? {} : local.wanted_repository_team
   condition     = data.github_team.repository_team[each.key].team_name != null && data.github_team.repository_team[each.key].team_name != ""
   error_message = "No ${each.key} team found. Need to create a team with the name ${each.value.name}."
 }
 
 fix "github_team" repository_teams {
-  for_each    = local.wanted_repository_team
+  for_each    = local.is_template_repo ? {} : local.wanted_repository_team
   rule_ids    = [rule.must_be_true.repository_teams[each.key].id]
   owner       = local.github_repository_owner
   team_name   = each.value.name
