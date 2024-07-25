@@ -1,5 +1,5 @@
 locals {
-  pool_name = length(local.github_repository_name_without_owner) >= 45 ? sha1(local.github_repository_name_without_owner) : local.github_repository_name_without_owner
+  pool_name        = length(local.github_repository_name_without_owner) >= 45 ? sha1(local.github_repository_name_without_owner) : local.github_repository_name_without_owner
   rendered_e2e_yml = try(replace(data.http.e2e_yaml["e2e_yaml"].response_body, "[ self-hosted, 1ES.Pool=terraform-azurerm-avm-template ]", "[ self-hosted, 1ES.Pool=${local.pool_name} ]"), "")
 }
 
