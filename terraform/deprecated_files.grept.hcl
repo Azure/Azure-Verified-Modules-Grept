@@ -2,6 +2,7 @@ locals {
   deprecated_files = toset([
     "locals.telemetry.tf",
     "locals.version.tf.json"
+    ".github/workflows/version-check.yml"
   ])
 }
 
