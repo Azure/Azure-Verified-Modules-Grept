@@ -85,6 +85,16 @@ jobs:
           OVERRIDE_GITHUB_REPOSITORY_OWNER: Azure
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: avm pre-commit
+        run: |
+          ./avm pre-commit
+        working-directory: ${{ matrix.repo }}
+        continue-on-error: true
+        env:
+          OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
+          OVERRIDE_GITHUB_REPOSITORY_OWNER: Azure
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: detect changes
         id: changes
         run: |
