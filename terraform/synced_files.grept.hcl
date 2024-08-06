@@ -18,7 +18,6 @@ locals {
     "LICENSE",
     "Makefile",
     "SECURITY.md",
-    "main.telemetry.tf",
   ])
 }
 
