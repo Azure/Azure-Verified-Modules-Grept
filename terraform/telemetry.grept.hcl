@@ -12,7 +12,7 @@ data "http" "main_telemetry" {
 
 # Local file must use either azurerm_client_config or azapi_client_config
 rule "must_be_true" "main_telemetry" {
-  condition     = sha1(file("main.telemetry.tf")) == sha1(data.http.main_telemetry.response_body) || sha1(file("main.telemetry.tf")) == sha1(local.telemetry_azapi_content)
+  condition     = try(sha1(file("main.telemetry.tf")) == sha1(data.http.main_telemetry.response_body), false) || try(sha1(file("main.telemetry.tf")) == sha1(local.telemetry_azapi_content), false)
   error_message = "The main.telemetry.tf file must be present in the repository."
 }
 
