@@ -1,6 +1,7 @@
 # re-render the telemetry file to use azapi_client_config instead of azurerm_client_config
 locals {
-  telemetry_azapi_content = try(replace(data.http.main_telemetry.response_body, "azurerm_client_config", "azapi_client_config"), "")
+  telemetry_azapi_content   = try(replace(data.http.main_telemetry.response_body, "azurerm_client_config", "azapi_client_config"), "")
+  azurerm_provider_declared = try(strcontains(file("terraform.tf"), "source  = \"hashicorp/azurerm\""), false)
 }
 
 # get the reference telemetry file
@@ -19,5 +20,5 @@ rule "must_be_true" "main_telemetry" {
 fix "local_file" "main_telemetry" {
   rule_ids = [rule.must_be_true.main_telemetry.id]
   paths    = ["main.telemetry.tf"]
-  content  = data.http.main_telemetry.response_body
+  content  = local.azurerm_provider_declared ? data.http.main_telemetry.response_body : local.telemetry_azapi_content
 }
