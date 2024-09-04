@@ -1,5 +1,5 @@
 locals {
-  synced_files = toset([
+  synced_non_workflow_files = [
     "_footer.md",
     ".github/CODEOWNERS",
     ".github/ISSUE_TEMPLATE/avm_module_issue.yml",
@@ -9,8 +9,6 @@ locals {
     ".github/policies/avmrequiredfiles.yml",
     ".github/policies/eventResponder.yml",
     ".github/policies/scheduledSearches.yml",
-    ".github/workflows/linting.yml",
-    ".github/workflows/version-check.yml",
     ".terraform-docs.yml",
     "avm.bat",
     "CODE_OF_CONDUCT.md",
@@ -18,7 +16,12 @@ locals {
     "LICENSE",
     "Makefile",
     "SECURITY.md",
-  ])
+  ]
+  synced_workflow_files = [
+    ".github/workflows/linting.yml",
+    ".github/workflows/version-check.yml",    
+  ]
+  synced_files = toset(concat(local.synced_non_workflow_files, var.workflow_toggle ? local.synced_workflow_files : []))
 }
 
 data "http" "synced_files" {
