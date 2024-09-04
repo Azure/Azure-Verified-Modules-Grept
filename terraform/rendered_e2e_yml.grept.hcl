@@ -11,7 +11,7 @@ data "http" "e2e_yaml" {
 }
 
 rule "file_hash" "e2e_yaml" {
-  for_each = var.workflow_toggle && !contains(local.repo_urls_that_bypass_e2e_yml_sync, local.github_repository_url) ? toset(["e2e_yaml"]) : []
+  for_each = var.workflows_toggle && !contains(local.repo_urls_that_bypass_e2e_yml_sync, local.github_repository_url) ? toset(["e2e_yaml"]) : []
 
   precondition {
     condition     = local.github_repository_name_without_owner != "" && local.github_repository_name != ""
@@ -23,7 +23,7 @@ rule "file_hash" "e2e_yaml" {
 }
 
 fix "local_file" "e2e_yaml" {
-  for_each = var.workflow_toggle && !contains(local.repo_urls_that_bypass_e2e_yml_sync, local.github_repository_url) ? toset(["e2e_yaml"]) : []
+  for_each = var.workflows_toggle && !contains(local.repo_urls_that_bypass_e2e_yml_sync, local.github_repository_url) ? toset(["e2e_yaml"]) : []
 
   rule_ids = [rule.file_hash.e2e_yaml[each.key].id]
   paths    = [rule.file_hash.e2e_yaml[each.key].glob]

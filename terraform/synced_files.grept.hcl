@@ -21,7 +21,7 @@ locals {
     ".github/workflows/linting.yml",
     ".github/workflows/version-check.yml",    
   ]
-  synced_files = toset(concat(local.synced_non_workflow_files, var.workflow_toggle ? local.synced_workflow_files : []))
+  synced_files = toset(concat(local.synced_non_workflow_files, var.workflows_toggle ? local.synced_workflow_files : []))
 }
 
 data "http" "synced_files" {

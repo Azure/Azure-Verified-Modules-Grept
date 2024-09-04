@@ -1,4 +1,4 @@
-variable "workflow_toggle" {
+variable "workflows_toggle" {
   default = true
   type    = string
 }
