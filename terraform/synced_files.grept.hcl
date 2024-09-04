@@ -19,7 +19,8 @@ locals {
   ]
   synced_workflow_files = [
     ".github/workflows/linting.yml",
-    ".github/workflows/version-check.yml",    
+    ".github/workflows/version-check.yml",
+    ".github/workflows/grept-cronjob.yml"
   ]
   synced_files = toset(concat(local.synced_non_workflow_files, var.workflows_toggle ? local.synced_workflow_files : []))
 }
