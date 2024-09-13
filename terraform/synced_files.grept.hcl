@@ -9,6 +9,7 @@ locals {
     ".github/policies/avmrequiredfiles.yml",
     ".github/policies/eventResponder.yml",
     ".github/policies/scheduledSearches.yml",
+    ".github/workflows/e2e.yml",
     ".github/workflows/linting.yml",
     ".github/workflows/version-check.yml",
     ".terraform-docs.yml",
