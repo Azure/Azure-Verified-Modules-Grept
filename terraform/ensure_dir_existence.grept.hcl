@@ -1,7 +1,6 @@
 locals {
   must_exist_dirs = toset([
     "examples",
-    "examples/default",
     "tests",
   ])
 }
