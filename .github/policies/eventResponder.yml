@@ -7,21 +7,21 @@ disabled: false
 configuration:
   resourceManagementConfiguration:
     eventResponderTasks:
-      - description: PR - close requests from thos without write access
+      - description: PR - close requests from this without write access
         if:
           - payloadType: Pull_Request
           - and:
-            - isOpen
-            - or:
-              - isAction:
-                  action: Opened
-              - isAction:
-                  action: Reopened
-            - or:
-              - activitySenderHasPermission:
-                  permission: read
-              - activitySenderHasPermission:
-                  permission: none
+              - isOpen
+              - or:
+                  - isAction:
+                      action: Opened
+                  - isAction:
+                      action: Reopened
+              - or:
+                  - activitySenderHasPermission:
+                      permission: read
+                  - activitySenderHasPermission:
+                      permission: none
         then:
           - addReply:
               reply: We do not accept pull requests from contributors without write access. Please contact a maintainer to make changes.
