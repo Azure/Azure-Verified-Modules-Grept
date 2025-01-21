@@ -86,7 +86,6 @@ jobs:
         run: |
           echo "==> Checking code repository with grept against ${{ env.GREPT_CONFIG }}..."
           docker run --pull always --rm -v "$(pwd)":/src -w /src -e OVERRIDE_GITHUB_REPOSITORY="$OVERRIDE_GITHUB_REPOSITORY" -e OVERRIDE_GITHUB_REPOSITORY_OWNER="$OVERRIDE_GITHUB_REPOSITORY_OWNER" mcr.microsoft.com/azterraform:latest /usr/local/go/bin/grept apply --auto "${{ env.GREPT_CONFIG }}"
-        working-directory: ${{ matrix.repo }}
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
           OVERRIDE_GITHUB_REPOSITORY_OWNER: Azure
@@ -95,7 +94,6 @@ jobs:
       - name: avm pre-commit
         run: |
           ./avm pre-commit
-        working-directory: ${{ matrix.repo }}
         continue-on-error: true
         env:
           OVERRIDE_GITHUB_REPOSITORY: Azure/${{ matrix.repo }}
@@ -112,7 +110,6 @@ jobs:
           fi
           echo "Changes detected"
           echo 'detected=true' >> "$GITHUB_OUTPUT"
-        working-directory: ${{ matrix.repo }}
 
       - name: commit changes to branch and push to origin
         if: steps.changes.outputs.detected == 'true'
@@ -125,7 +122,6 @@ jobs:
           git add .
           git commit -m "fix: grept apply"
           git push --set-upstream origin "$BRANCH"
-        working-directory: ${{ matrix.repo }}
 
       - name: create PR body
         if: steps.changes.outputs.detected == 'true'
@@ -143,14 +139,12 @@ jobs:
 
           Thanks! The AVM team :heart:
           EOF
-        working-directory: ${{ matrix.repo }}
 
       - name: show body
         if: steps.changes.outputs.detected == 'true'
         run: |
           echo "Displaying PR body:"
           cat prbody.md
-        working-directory: ${{ matrix.repo }}
 
       - name: create pull request
         if: steps.changes.outputs.detected == 'true'
@@ -160,7 +154,6 @@ jobs:
           echo pull-request-number=$(gh pr view $PR_URL --json number | jq -r '.number') >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        working-directory: ${{ matrix.repo }}
 
       - name: close and comment out of date prs
         if: steps.changes.outputs.detected == 'true'
@@ -169,7 +162,6 @@ jobs:
           echo "$PULL_REQUESTS" | jq -r '.[] | select(.number != ${{ steps.pr.outputs.pull-request-number }}) | .number' | xargs -I {} gh pr close {} --delete-branch --comment "Supersceeded by #${{ steps.pr.outputs.pull-request-number }}"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        working-directory: ${{ matrix.repo }}
 
       - name: sleep for rate limit
         if: ${{ always() }}
