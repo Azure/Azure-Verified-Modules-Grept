@@ -117,7 +117,7 @@ jobs:
       - name: commit changes to branch and push to origin
         if: steps.changes.outputs.detected == 'true'
         run: |
-          git config --global user.email "azure-verified-modules[bot]@users.noreply.github.com"
+          git config --global user.email "187664033+azure-verified-modules[bot]@users.noreply.github.com"
           git config --global user.name "azure-verified-modules[bot]"
           BRANCH="grept-apply-$(date +%s)"
           echo "branch=$BRANCH" >> "$GITHUB_ENV"
