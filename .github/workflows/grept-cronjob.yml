@@ -75,10 +75,6 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: set env result=success
-        run: |
-          echo 'result=success' >> "$GITHUB_ENV"
-
       - name: checkout remote
         id: checkout
         run: |
@@ -174,16 +170,6 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         working-directory: ${{ matrix.repo }}
-
-      - name: set env result=failure
-        if: ${{ failure() }}
-        run: |
-          echo 'result=failed' >> "$GITHUB_ENV"
-          if [ ! -z "${{ env.branch }}" ]; then
-            git push origin --delete "${{ env.branch }}"
-          fi
-        working-directory: ${{ matrix.repo }}
-
 
       - name: set output
         if: ${{ always() }}
