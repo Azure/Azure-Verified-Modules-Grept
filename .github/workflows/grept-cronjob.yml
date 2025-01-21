@@ -82,7 +82,7 @@ jobs:
       - name: checkout remote
         id: checkout
         run: |
-          git clone "https://${{ env.GITHUB_USER }}:${{ steps.app-token.outputs.result }}@github.com/Azure/${{ matrix.repo }}.git"
+          git clone "https://oauth2:${GH_TOKEN}@github.com/Azure/${{ matrix.repo }}.git"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
