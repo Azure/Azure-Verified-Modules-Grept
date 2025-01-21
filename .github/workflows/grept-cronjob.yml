@@ -75,12 +75,12 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: checkout remote
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         id: checkout
-        run: |
-          git clone "https://oauth2:${GH_TOKEN}@github.com/Azure/${{ matrix.repo }}.git"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: Azure/${{ matrix.repo }}
+          persist-credentials: true
 
       - name: grept apply and auto remediate
         run: |
