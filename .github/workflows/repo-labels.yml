@@ -23,6 +23,12 @@ jobs:
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
     steps:
+      - uses: actions/create-github-app-token@c1a285145b9d317df6ced56c09f525b5c2b6f755 # v1.11.1
+        id: app-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: query GitHub graphql API
         id: graphql # TODO replace with CSV output when ready
         run: |
@@ -44,7 +50,7 @@ jobs:
           echo repoarray="$REPOARRAY"
           echo repoarray="$REPOARRAY" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   sync-labels:
     name: sync
@@ -62,6 +68,12 @@ jobs:
           - repo: "terraform-azurerm-avm-template"
       fail-fast: false
     steps:
+      - uses: actions/create-github-app-token@c1a285145b9d317df6ced56c09f525b5c2b6f755 # v1.11.1
+        id: app-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}\
+
       - name: run avm github labels script
         shell: pwsh
         run: |
@@ -69,5 +81,4 @@ jobs:
           ./Set-AvmGitHubLabels.ps1 -RepositoryName "Azure/${{ matrix.repo }}" -CreateCsvLabelExports $false -RemoveExistingLabels $false -NoUserPrompts $true
           echo ${{ matrix.repo }}
         env:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT }}
-
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
