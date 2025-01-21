@@ -26,7 +26,7 @@ jobs:
       - uses: actions/create-github-app-token@c1a285145b9d317df6ced56c09f525b5c2b6f755 # v1.11.1
         id: app-token
         with:
-          app-id: ${{ vars.APP_ID }}
+          app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: query GitHub graphql API
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/create-github-app-token@c1a285145b9d317df6ced56c09f525b5c2b6f755 # v1.11.1
         id: app-token
         with:
-          app-id: ${{ vars.APP_ID }}
+          app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: set env result=success
@@ -82,7 +82,7 @@ jobs:
       - name: checkout remote
         id: checkout
         run: |
-          git clone "https://${{ env.GITHUB_USER }}:${{ secrets.USER_PAT }}@github.com/Azure/${{ matrix.repo }}.git"
+          git clone "https://${{ env.GITHUB_USER }}:${{ steps.app-token.outputs.result }}@github.com/Azure/${{ matrix.repo }}.git"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
