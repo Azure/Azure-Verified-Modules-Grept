@@ -171,12 +171,6 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         working-directory: ${{ matrix.repo }}
 
-      - name: set output
-        if: ${{ always() }}
-        id: set-output
-        run: |
-          echo "result=${{ env.result }}" >> "$GITHUB_OUTPUT"
-
       - name: sleep for rate limit
         if: ${{ always() }}
         id: sleep
