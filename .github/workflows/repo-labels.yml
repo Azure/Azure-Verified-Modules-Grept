@@ -58,8 +58,6 @@ jobs:
     needs: getrepos
     env:
       GITHUB_USER: matt-FFFFFF
-    outputs:
-      result: ${{ steps.set-output.outputs.result }}
     strategy:
       max-parallel: 5
       matrix:
