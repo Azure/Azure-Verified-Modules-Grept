@@ -22,6 +22,8 @@ locals {
     ".DS_Store",
     "*.md.tmp",
     "examples/*/policy",
+    "**/tfplan.binary",
+    "**/tfplan.json",
   ])
 }
 
