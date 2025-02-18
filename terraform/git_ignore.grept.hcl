@@ -21,6 +21,8 @@ locals {
     "terraform.rc",
     ".DS_Store",
     "*.md.tmp",
+    "**/tfplan.binary",
+    "**/tfplan.json",
   ])
 }
 
