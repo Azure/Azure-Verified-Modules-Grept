@@ -21,6 +21,7 @@ locals {
     "terraform.rc",
     ".DS_Store",
     "*.md.tmp",
+    "examples/*/policy",
   ])
 }
 
