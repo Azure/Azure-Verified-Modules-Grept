@@ -19,6 +19,7 @@ locals {
     "LICENSE",
     "Makefile",
     "SECURITY.md",
+    ".editorconfig",
   ])
 }
 
