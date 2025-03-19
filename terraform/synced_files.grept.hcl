@@ -15,6 +15,7 @@ locals {
     ".terraform-docs.yml",
     "avm.bat",
     "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
     "examples/.terraform-docs.yml",
     "LICENSE",
     "Makefile",
