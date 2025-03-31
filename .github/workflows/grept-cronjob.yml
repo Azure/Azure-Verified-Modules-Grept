@@ -9,7 +9,6 @@ on:
         description: '(Optional) GitHub search query for repos in the Azure organization'
         type: string
         required: false
-        default: null
 
 permissions:
   issues: write
@@ -19,7 +18,7 @@ jobs:
     name: get repos
     runs-on: ubuntu-latest
     env:
-      query: "terraform-azurerm-avm-"
+      query: "-avm- in:name terraform- in:name user:azure NOT terraform-azurerm-avm-template"
     outputs:
       repoarray: ${{ steps.graphql.outputs.repoarray }}
     steps:
@@ -33,7 +32,7 @@ jobs:
         id: graphql # TODO replace with CSV output when ready
         run: |
           RESULT=$(gh api graphql --paginate -f query='query {
-            search(query: "${{ inputs.query || env.query }} user:azure", type: REPOSITORY, first: 100) {
+            search(query: "${{ inputs.query || env.query }}", type: REPOSITORY, first: 100) {
                 repositoryCount
                 edges {
                   node {
