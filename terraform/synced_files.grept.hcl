@@ -21,6 +21,7 @@ locals {
     "Makefile",
     "SECURITY.md",
     ".editorconfig",
+    "SUPPORT.md",
   ])
 }
 
